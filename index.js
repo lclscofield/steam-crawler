@@ -44,6 +44,15 @@ const detailList = []
 // 列表类型
 const listType = ['all', 'discount', 'hot', 'new']
 
+// 当前日期
+let date = new Date()
+date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
+
+const datePath = __dirname + '/dist/' + date
+if (!fs.existsSync(datePath)) {
+    fs.mkdirSync(datePath)
+}
+
 // 获取各类型总页数
 function fetchPage() {
     mapList.forEach(item => {
@@ -57,9 +66,9 @@ function fetchPage() {
                     const $ = res.$
                     const { type } = res.options
                     const obj = typeObj(type)
-                    const text = Text($('.search_results_count'), '')
-                    console.log()
-                    obj.pageTotal = Number.parseInt((text.match(/\d*/g).join('')) / 100) + 1
+                    const text = Text($('.search_pagination_left'), '')
+                    // obj.pageTotal = Number.parseInt((text.match(/\d*/g).join('')) / 100) + 1
+                    bj.pageTotal = Number.parseInt(text.split('，')[1].replace(/[^0-9]/gi, '') / 100) + 1
                     console.log(123, obj.type, obj.pageTotal, text.match(/\d*/g).join(''))
                     fetchGameList(obj)
                 }
@@ -131,7 +140,7 @@ c.on('drain', function() {
 
         // 写入文件
         console.time(`${map.type} 写入文件耗时`)
-        const ws = fs.createWriteStream(__dirname + `/dist/${map.type}.json`)
+        const ws = fs.createWriteStream(__dirname + `/dist/${date}/${map.type}.json`)
         map.data.forEach(gameList => {
             if (!gameList) return
 
@@ -147,18 +156,8 @@ c.on('drain', function() {
     console.timeEnd('总耗时')
 })
 
-// 爬取游戏详情，向队列添加列表页面 url
-function fetchGameDetail(url) {
-    c.queue({
-        uri: url,
-        type: 'detail'
-    })
-}
-
 function main() {
     fetchPage()
 }
-
-// fetchGameList(1)
 
 main()

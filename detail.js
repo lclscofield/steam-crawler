@@ -6,13 +6,20 @@ const getGameDetail = require('./getGameDetail')
 
 console.time('总耗时')
 
+// 路径
+const detailPath = __dirname + '/dist/detail.json'
 // 详情数据
 const detail = []
 // 计数
 let numTotal = 0 // 总的
 let count = 0 // 实际
+
+// 如果存在则删除 detail.js
+if (fs.existsSync(detailPath)) {
+    fs.unlinkSync(detailPath)
+}
 // 写入流
-const ws = fs.createWriteStream(__dirname + `/dist/detail.json`, { flags: 'a' })
+const ws = fs.createWriteStream(__dirname + '/dist/detail.json', { flags: 'a' })
 
 // 爬取队列
 const c = new Crawler({
