@@ -6,20 +6,29 @@ const getGameDetail = require('./getGameDetail')
 
 console.time('总耗时')
 
-// 路径
-const detailPath = __dirname + '/dist/detail.json'
 // 详情数据
 const detail = []
 // 计数
 let numTotal = 0 // 总的
 let count = 0 // 实际
+// 当前日期
+let date = new Date()
+date = date.getFullYear() + '-' + (date.getMonth() < 9 ? (`0${date.getMonth() + 1}`) : (date.getMonth() + 1)) + '-' + date.getDate()
+
+const datePath = __dirname + '/dist/' + date
+if (!fs.existsSync(datePath)) {
+    fs.mkdirSync(datePath)
+}
+
+// 路径
+const detailPath = datePath + '/detail.json'
 
 // 如果存在则删除 detail.js
 if (fs.existsSync(detailPath)) {
     fs.unlinkSync(detailPath)
 }
 // 写入流
-const ws = fs.createWriteStream(__dirname + '/dist/detail.json', { flags: 'a' })
+const ws = fs.createWriteStream(detailPath, { flags: 'a' })
 
 // 爬取队列
 const c = new Crawler({
@@ -61,7 +70,7 @@ c.on('drain', function() {
 })
 
 const rl = readline.createInterface({
-    input: fs.createReadStream(__dirname + '/dist/all.json')
+    input: fs.createReadStream(datePath + '/all.json')
 })
 
 rl.on('line', line => {

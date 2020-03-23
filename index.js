@@ -38,15 +38,12 @@ const mapList = [
     }
 ]
 
-// 总的详情数据
-const detailList = []
-
 // 列表类型
 const listType = ['all', 'discount', 'hot', 'new']
 
 // 当前日期
 let date = new Date()
-date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
+date = date.getFullYear() + '-' + (date.getMonth() < 9 ? (`0${date.getMonth() + 1}`) : (date.getMonth() + 1)) + '-' + date.getDate()
 
 const datePath = __dirname + '/dist/' + date
 if (!fs.existsSync(datePath)) {
@@ -67,9 +64,8 @@ function fetchPage() {
                     const { type } = res.options
                     const obj = typeObj(type)
                     const text = Text($('.search_pagination_left'), '')
-                    // obj.pageTotal = Number.parseInt((text.match(/\d*/g).join('')) / 100) + 1
-                    bj.pageTotal = Number.parseInt(text.split('，')[1].replace(/[^0-9]/gi, '') / 100) + 1
-                    console.log(123, obj.type, obj.pageTotal, text.match(/\d*/g).join(''))
+                    obj.pageTotal = Number.parseInt(text.split('，')[1].replace(/[^0-9]/gi, '') / 100) + 1
+                    console.log(123, obj.type, obj.pageTotal, text.split('，')[1].replace(/[^0-9]/gi, ''))
                     fetchGameList(obj)
                 }
                 done()
