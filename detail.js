@@ -42,12 +42,14 @@ const c = new Crawler({
             console.log(err)
         } else {
             const $ = res.$
-            const { gId, url } = res.options
+            const { gId, url, price, strike } = res.options
             const game = getGameDetail($)
 
             if (game && game.appName) {
                 game.gId = gId
                 game.url = url
+                game.price = price
+                game.strike = strike
                 // 注入 _id
                 game._id = `detail-${game.gId}`
 
@@ -78,9 +80,12 @@ rl.on('line', line => {
     if (!line) return
     const obj = JSON.parse(line)
     const url = obj.url + '?l=schinese'
+    const { price, strike } = obj
     c.queue({
         uri: url,
         gId: obj.gId,
-        url: url
+        url,
+        price, // 原价
+        strike // 实际价
     })
 })
